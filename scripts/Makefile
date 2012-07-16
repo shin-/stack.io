@@ -1,38 +1,43 @@
-all: clean build-server build-server-app build-client build-utils build-apps create-index
+all: clean build-apps create-index
 
-clean:
-	rm -rf bin/
+create-bin:
 	mkdir bin
 
-build-server:
-	cp -r src/server bin/server
+clean:
+	rm -rf bin/ build/
 
-build-server-app:
+build-server: create-bin
+	cp -r src/stack.io/ bin/
+	rm -rf bin/stack.io/client
+
+build-server-app: create-bin build-server
 	cp -r src/server-app bin/server-app
-	cp -r bin/server bin/server-app/stack
+	cp -r bin/stack.io bin/server-app/
 
-build-client:
-	mkdir bin/client
-	mkdir bin/client/python
-	mkdir bin/client/node
+build-client: create-bin build-web-client build-python-client build-node-client
 
-	cp src/client/python/stackio.py bin/client/python/stackio.py
-	
-	./scripts/simple_replace src/client/node/stack.io.js src/client/shared/js/shared.js bin/client/node/stack.io.js
-
+build-web-client:
+	mkdir -p bin/stack.io/client/web
 	mkdir build
-	./scripts/simple_replace src/client/web/stack.io.js src/client/shared/js/shared.js build/stack.io.js
+
+	./scripts/simple_replace src/stack.io/client/web/stack.io.js src/stack.io/client/shared/js/shared.js build/stack.io.js
 	node scripts/r.js -o scripts/client-build-prod.cfg.js
 	node scripts/r.js -o scripts/client-build-debug.cfg.js
+
 	rm -rf build
 
-build-utils:
-	cp -r src/authorizer bin/authorizer
-	node bin/authorizer/sqlite/lib/init-db.js bin/authorizer/sqlite/authorizer.db
+build-node-client:
+	mkdir -p bin/stack.io/client/node
+	./scripts/simple_replace src/stack.io/client/node/stack.io.js src/stack.io/client/shared/js/shared.js bin/stack.io/client/node/stack.io.js
 
-	cp -r src/registrar bin/registrar
+build-python-client:
+	mkdir -p bin/stack.io/client/python
+	cp src/stack.io/client/python/stackio.py bin/stack.io/client/python/stackio.py
 
-build-apps:
+build-utils: build-server
+	node bin/stack.io/authorizer/sqlite/lib/init-db.js bin/authorizer.db
+
+build-apps: build-server-app build-client build-utils
 	cp -r apps bin/apps
 	./scripts/build_app dashboard
 	./scripts/build_app test
@@ -41,6 +46,6 @@ build-apps:
 	./scripts/build_app stress
 
 create-index:
-	echo "module.exports = require('./bin/server');" > index.js
+	cp src/index.js .
 
-npm-distrib: clean build-server build-client build-utils create-index
+npm-distrib: clean build-server build-node-client build-web-client build-utils create-index

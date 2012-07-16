@@ -1,4 +1,5 @@
-var stack = require("./stack");
+var stack = require("../../../stack.io").client;
+
 var UPDATE_RATE = 0;
 
 function Mice() {

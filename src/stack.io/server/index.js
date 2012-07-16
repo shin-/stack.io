@@ -1,6 +1,6 @@
-var model = require("./lib/model"),
-    server = require("./lib/server"),
-    auth = require("./lib/middleware/auth");
+var model = require("./model"),
+    server = require("./server"),
+    auth = require("./middleware/auth");
 
 var connectors = {
     "SocketIOConnector": "socketio"
@@ -13,11 +13,11 @@ var middleware = {
 };
 
 for(var connectorName in connectors) {
-    exports[connectorName] = require("./lib/connectors/" + connectors[connectorName])
+    exports[connectorName] = require("./connectors/" + connectors[connectorName])
 }
 
 for(var middlewareName in middleware) {
-    exports[middlewareName] = require("./lib/middleware/" + middleware[middlewareName])
+    exports[middlewareName] = require("./middleware/" + middleware[middlewareName])
 }
 
 exports.createSyntheticError = model.createSyntheticError;

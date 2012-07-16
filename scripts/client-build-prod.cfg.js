@@ -1,6 +1,6 @@
 ({
     baseUrl: '../build',
-    out: '../bin/client/web/stack.io.js',
+    out: '../bin/stack.io/client/web/stack.io.js',
     name: '../lib/client/almond',
     include: ['stack.io'],
     paths: {
