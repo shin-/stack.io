@@ -1,4 +1,4 @@
-var stack = require("./stack"),
+var stack = require("../stack.io").server,
     express = require("express");
 
 var REGISTRAR_ENDPOINT = "tcp://127.0.0.1:27615";

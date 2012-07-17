@@ -117,6 +117,14 @@ define(['socket.io'], function() {
         this._invoke("_stackio", "inspect", service, callback);
     }
 
+    Engine.prototype.call = function(service, method) {
+        var self = this;
+        return function() {
+            var args = Array.prototype.slice.call(arguments);
+            Engine.prototype._invoke.apply(self, [service, method].concat(args));
+        }
+    }
+
     //--BEGIN SHARED CODE--
     //--END SHARED CODE--
 
